@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+enum Breed {
+  Holstein
+  Jersey
+  Guernsey
+  Ayrshire
+  Brown_Swiss
+  Milking_Shorthorn
+  Crossbreed
+  Other
+}
+
+enum Gender {
+  Female
+  Male
+}
+
+enum CattleStatus {
+  Active
+  Dry
+  Pregnant
+  Sold
+  Deceased
+}
+
+enum GrowthStage {
+  Calf
+  Post_weaning_Calf
+  Growing_Heifer
+  Bred_Heifer
+  Mature_Cow
+}
+
+enum AcquisitionType {
+  Born_on_Farm
+  Purchased
+  Gifted
+}
+enum HealthStatus {
+  Healthy
+  Sick
+  Recovering
+}
+
+enum HealthRecordType {
+  Vaccination
+  Treatment
+  Deworming
+  Disease
+  Injury
+  Surgery
+  PregnancyCheck
+  Other
+}
+model Cattle {
+  id                 String   @id @default(uuid())
+
+  tagNumber          String   @unique
+  name               String
+
+  breed              Breed
+
+  dateOfBirth        DateTime
+
+  gender             Gender @default(Female)
+
+  status             CattleStatus @default(Active)
+
+  stage              GrowthStage
+
+  lactationNumber    Int      @default(0)
+
+  weightKg           Float?
+
+  acquisitionDate    DateTime?
+
+  acquisitionType    AcquisitionType @default(Born_on_Farm)
+
+  groupId            String?
+
+  group CattleGroup? @relation(fields: [groupId], references: [id])
+
+  photo              String?
+
+  notes              String?
+
+  active             Boolean  @default(true)
+
+  healthRecords      HealthRecord[]
+
+  createdAt          DateTime @default(now())
+
+  updatedAt          DateTime @updatedAt
+}
+model CattleGroup {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  color       String?
+  active      Boolean  @default(true)
+
+  cattle      Cattle[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+model HealthRecord {
+
+  id              String @id @default(uuid())
+
+  cattleId        String
+
+  cattle          Cattle @relation(fields:[cattleId],references:[id])
+
+  type            HealthRecordType
+
+  status          HealthStatus @default(Healthy)
+
+  diagnosis       String?
+
+  treatment       String?
+
+  medicine        String?
+
+  dosage          String?
+
+  veterinarian    String?
+
+  cost            Float?
+
+  visitDate       DateTime
+
+  nextVisit       DateTime?
+
+  notes           String?
+
+  createdAt       DateTime @default(now())
+
+  updatedAt       DateTime @updatedAt
+}
+model User {
+  id           String   @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String   @unique
+  password     String
+
+  role         String   @default("ADMIN")
+  active       Boolean  @default(true)
+
+  refreshToken String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
