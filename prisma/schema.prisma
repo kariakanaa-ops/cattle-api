@@ -58,6 +58,18 @@ enum HealthRecordType {
   Surgery
   PregnancyCheck
   Other
+  }
+  enum BreedingMethod {
+  Natural
+  ArtificialInsemination
+  EmbryoTransfer
+}
+
+enum PregnancyStatus {
+  Open
+  Pregnant
+  Failed
+  Calved
 }
 model Cattle {
   id                 String   @id @default(uuid())
@@ -94,6 +106,8 @@ model Cattle {
   active             Boolean  @default(true)
 
   healthRecords      HealthRecord[]
+
+  breedingRecords BreedingRecord[]
 
   createdAt          DateTime @default(now())
 
@@ -159,4 +173,38 @@ model User {
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+model BreedingRecord {
+
+  id                 String @id @default(uuid())
+
+  cattleId           String
+
+  cattle             Cattle @relation(fields:[cattleId],references:[id])
+
+  breedingDate       DateTime
+
+  method             BreedingMethod
+
+  bullName           String?
+
+  semenBatch         String?
+
+  technician         String?
+
+  expectedCalving    DateTime?
+
+  actualCalving      DateTime?
+
+  pregnancyStatus    PregnancyStatus @default(Open)
+
+  calfTag            String?
+
+  calfGender         Gender?
+
+  notes              String?
+
+  createdAt          DateTime @default(now())
+
+  updatedAt          DateTime @updatedAt
 }

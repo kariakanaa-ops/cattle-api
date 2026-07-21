@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { CattleModule } from './cattle/cattle.module';
 import { CattleGroupModule } from './group/cattle-group.module';
 import { HealthRecordModule } from './health-record/health-record.module';
+import { BreedingModule } from './breeding/breeding.module';
 @Module({
   imports: [
     PrismaModule,
@@ -17,6 +18,7 @@ import { HealthRecordModule } from './health-record/health-record.module';
     CattleModule,
     CattleGroupModule,
     HealthRecordModule,
+    BreedingModule,
   ],
   controllers: [
     AppController,

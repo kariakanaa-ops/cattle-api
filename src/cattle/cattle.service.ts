@@ -22,6 +22,7 @@ export class CattleService {
     include: {
       group: true,
       healthRecords: true,
+      breedingRecords: true,
     },
     orderBy: {
       createdAt: 'desc',
@@ -29,14 +30,14 @@ export class CattleService {
   });
 }
 
+
   findOne(id: string) {
   return this.prisma.cattle.findUnique({
-    where: {
-      id,
-    },
+    where: { id },
     include: {
       group: true,
       healthRecords: true,
+      breedingRecords: true,
     },
   });
 }
