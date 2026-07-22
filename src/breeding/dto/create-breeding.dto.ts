@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   BreedingMethod,
   PregnancyStatus,
-  Gender,
-} from '@prisma/client';
+} from '../types';
+import { Gender } from '@prisma/client';
 
 import {
   IsDateString,
@@ -16,15 +16,15 @@ export class CreateBreedingDto {
 
   @ApiProperty()
   @IsString()
-  cattleId: string;
+  cattleId!: string;
 
   @ApiProperty()
   @IsDateString()
-  breedingDate: string;
+  breedingDate!: string;
 
   @ApiProperty({ enum: BreedingMethod })
   @IsEnum(BreedingMethod)
-  method: BreedingMethod;
+  method!: BreedingMethod;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -50,7 +50,7 @@ export class CreateBreedingDto {
 
   @ApiProperty({ enum: PregnancyStatus })
   @IsEnum(PregnancyStatus)
-  pregnancyStatus: PregnancyStatus;
+  pregnancyStatus!: PregnancyStatus;
 
   @ApiProperty({ required: false })
   @IsOptional()

@@ -10,6 +10,7 @@ import { CattleModule } from './cattle/cattle.module';
 import { CattleGroupModule } from './group/cattle-group.module';
 import { HealthRecordModule } from './health-record/health-record.module';
 import { BreedingModule } from './breeding/breeding.module';
+import { MilkProductionModule } from './milk-production/milk-production.module';
 @Module({
   imports: [
     PrismaModule,
@@ -19,6 +20,7 @@ import { BreedingModule } from './breeding/breeding.module';
     CattleGroupModule,
     HealthRecordModule,
     BreedingModule,
+    MilkProductionModule,
   ],
   controllers: [
     AppController,

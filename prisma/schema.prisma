@@ -43,6 +43,7 @@ enum AcquisitionType {
   Purchased
   Gifted
 }
+
 enum HealthStatus {
   Healthy
   Sick
@@ -58,8 +59,9 @@ enum HealthRecordType {
   Surgery
   PregnancyCheck
   Other
-  }
-  enum BreedingMethod {
+}
+
+enum BreedingMethod {
   Natural
   ArtificialInsemination
   EmbryoTransfer
@@ -70,6 +72,17 @@ enum PregnancyStatus {
   Pregnant
   Failed
   Calved
+}
+enum MilkingSession {
+  Morning
+  Afternoon
+  Evening
+}
+
+enum MilkQualityGrade {
+  A
+  B
+  C
 }
 model Cattle {
   id                 String   @id @default(uuid())
@@ -108,6 +121,8 @@ model Cattle {
   healthRecords      HealthRecord[]
 
   breedingRecords BreedingRecord[]
+
+  milkProductions MilkProduction[]
 
   createdAt          DateTime @default(now())
 
@@ -207,4 +222,34 @@ model BreedingRecord {
   createdAt          DateTime @default(now())
 
   updatedAt          DateTime @updatedAt
+}
+model MilkProduction {
+
+  id                  String @id @default(uuid())
+
+  cattleId            String
+
+  cattle              Cattle @relation(fields: [cattleId], references: [id])
+
+  date                DateTime
+
+  session             MilkingSession
+
+  quantityLiters      Float
+
+  milkUsedByCalves    Float? @default(0)
+
+  fatPercentage       Float?
+
+  proteinPercentage   Float?
+
+  somaticCellCount    Int?
+
+  qualityGrade        MilkQualityGrade @default(A)
+
+  notes               String?
+
+  createdAt           DateTime @default(now())
+
+  updatedAt           DateTime @updatedAt
 }

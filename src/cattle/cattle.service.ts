@@ -23,6 +23,7 @@ export class CattleService {
       group: true,
       healthRecords: true,
       breedingRecords: true,
+      milkProductions: true,
     },
     orderBy: {
       createdAt: 'desc',
@@ -38,6 +39,7 @@ export class CattleService {
       group: true,
       healthRecords: true,
       breedingRecords: true,
+      milkProductions: true,
     },
   });
 }
