@@ -11,6 +11,8 @@ import { CattleGroupModule } from './group/cattle-group.module';
 import { HealthRecordModule } from './health-record/health-record.module';
 import { BreedingModule } from './breeding/breeding.module';
 import { MilkProductionModule } from './milk-production/milk-production.module';
+import { FeedCategoryModule } from './feed/category/feed-category.module';
+import { FeedInventoryModule } from './feed/inventory/feed-inventory.module';
 @Module({
   imports: [
     PrismaModule,
@@ -21,6 +23,8 @@ import { MilkProductionModule } from './milk-production/milk-production.module';
     HealthRecordModule,
     BreedingModule,
     MilkProductionModule,
+    FeedCategoryModule,
+    FeedInventoryModule,
   ],
   controllers: [
     AppController,

@@ -84,6 +84,23 @@ enum MilkQualityGrade {
   B
   C
 }
+enum FeedType {
+  Hay
+  Silage
+  Concentrate
+  Mineral
+  Supplement
+  Pasture
+  Other
+}
+
+enum StockTransactionType {
+  Purchase
+  Consumption
+  Adjustment
+  Transfer
+  Loss
+}
 model Cattle {
   id                 String   @id @default(uuid())
 
@@ -123,6 +140,8 @@ model Cattle {
   breedingRecords BreedingRecord[]
 
   milkProductions MilkProduction[]
+
+  feedConsumptions FeedConsumption[]
 
   createdAt          DateTime @default(now())
 
@@ -252,4 +271,100 @@ model MilkProduction {
   createdAt           DateTime @default(now())
 
   updatedAt           DateTime @updatedAt
+}
+model FeedCategory {
+
+  id          String   @id @default(uuid())
+
+  name        String   @unique
+
+  description String?
+
+  createdAt   DateTime @default(now())
+
+  updatedAt   DateTime @updatedAt
+
+  feeds       FeedInventory[]
+}
+model FeedInventory {
+
+  id                  String @id @default(uuid())
+
+  categoryId          String
+
+  category            FeedCategory @relation(fields:[categoryId], references:[id])
+
+  name                String
+
+  type                FeedType
+
+  quantity            Float
+
+  unit                String
+
+  minimumStock        Float
+
+  unitCost            Float?
+
+  supplier            String?
+
+  batchNumber         String?
+
+  manufactureDate     DateTime?
+
+  expiryDate          DateTime?
+
+  storageLocation     String?
+
+  notes               String?
+
+  createdAt           DateTime @default(now())
+
+  updatedAt           DateTime @updatedAt
+
+  stockTransactions   FeedStockTransaction[]
+
+  consumptions        FeedConsumption[]
+}
+model FeedStockTransaction {
+
+  id               String @id @default(uuid())
+
+  feedId           String
+
+  feed             FeedInventory @relation(fields:[feedId], references:[id])
+
+  transactionType  StockTransactionType
+
+  quantity         Float
+
+  transactionDate  DateTime
+
+  reference        String?
+
+  remarks          String?
+
+  createdAt        DateTime @default(now())
+}
+model FeedConsumption {
+
+  id               String @id @default(uuid())
+
+  cattleId         String
+
+  cattle           Cattle @relation(fields:[cattleId], references:[id])
+
+  feedId           String
+
+  feed             FeedInventory @relation(fields:[feedId], references:[id])
+
+  feedingDate      DateTime
+
+  quantity         Float
+
+  session          MilkingSession
+
+  remarks          String?
+
+  createdAt        DateTime @default(now())
 }
