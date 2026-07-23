@@ -11,7 +11,23 @@ import {
 import { HealthRecordService } from './health-record.service';
 import { CreateHealthRecordDto } from './dto/create-health-record.dto';
 import { UpdateHealthRecordDto } from './dto/update-health-record.dto';
+import { UseGuards } from '@nestjs/common';
 
+import { ApiBearerAuth } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+
+import { RolesGuard } from '../auth/guards/roles.guard';
+
+import { Roles } from '../auth/decorators/roles.decorator';
+
+import { UserRole } from '@prisma/client';
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(
+    UserRole.Admin,
+    UserRole.Veterinarian,
+)
 @Controller('health-records')
 export class HealthRecordController {
   constructor(

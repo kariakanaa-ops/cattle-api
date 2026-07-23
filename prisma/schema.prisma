@@ -127,6 +127,7 @@ enum InventoryCategory {
   Equipment
   Supplies
 }
+
 enum StockAdjustmentType {
   Purchase
   Consumption
@@ -134,6 +135,57 @@ enum StockAdjustmentType {
   Transfer
   Adjustment
 }
+
+enum TransactionType {
+  Income
+  Expense
+}
+
+enum PaymentMethod {
+  Cash
+  MobileMoney
+  BankTransfer
+  Cheque
+  Credit
+}
+
+enum UserRole {
+  Admin
+  Manager
+  Veterinarian
+  Accountant
+  FarmWorker
+}
+
+enum DocumentType {
+  Photo
+  PDF
+  Word
+  Excel
+  Image
+  Video
+  Other
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+}
+
+enum NotificationType {
+  Info
+  Warning
+  Critical
+}
+
+enum NotificationStatus {
+  Unread
+  Read
+}
+
 model Cattle {
   id String @id @default(uuid())
 
@@ -174,6 +226,8 @@ model Cattle {
 
   milkProductions MilkProduction[]
 
+  transactions Transaction[]
+
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
@@ -189,6 +243,8 @@ model CattleGroup {
   cattle Cattle[]
 
   consumptions ConsumptionRecord[]
+
+  feedRatios FeedRatio[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -235,10 +291,14 @@ model User {
   email     String @unique
   password  String
 
-  role   String  @default("ADMIN")
-  active Boolean @default(true)
+  role   UserRole @default(Admin)
+  active Boolean  @default(true)
 
   refreshToken String?
+
+  auditTrails AuditTrail[]
+
+  notifications Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -333,6 +393,8 @@ model Inventory {
 
   consumptions ConsumptionRecord[]
 
+  feedRatioComponents FeedRatioComponent[]
+
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
@@ -359,49 +421,225 @@ model Vendor {
 
   inventory Inventory[]
 
+  transactions Transaction[]
+
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
 }
+
 model StockAdjustment {
+  id String @id @default(uuid())
 
-  id              String @id @default(uuid())
+  inventoryId String
 
-  inventoryId     String
+  inventory Inventory @relation(fields: [inventoryId], references: [id])
 
-  inventory        Inventory @relation(fields: [inventoryId], references: [id])
+  adjustmentType StockAdjustmentType
 
-  adjustmentType  StockAdjustmentType
+  quantity Float
 
-  quantity        Float
+  adjustmentDate DateTime
 
-  adjustmentDate  DateTime
-
-  reason          String?
+  reason String?
 
   referenceNumber String?
 
-  createdBy       String?
+  createdBy String?
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 }
+
 model ConsumptionRecord {
+  id String @id @default(uuid())
 
-  id              String   @id @default(uuid())
+  inventoryId String
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
 
-  inventoryId     String
-  inventory       Inventory @relation(fields: [inventoryId], references: [id])
+  groupId String
+  group   CattleGroup @relation(fields: [groupId], references: [id])
 
-  groupId         String
-  group           CattleGroup @relation(fields: [groupId], references: [id])
+  quantity Float
 
-  quantity        Float
+  feedingDate DateTime
 
-  feedingDate     DateTime
+  notes String?
 
-  notes           String?
+  recordedBy String?
 
-  recordedBy      String?
+  createdAt DateTime @default(now())
+}
 
-  createdAt       DateTime @default(now())
+model FeedRatio {
+  id String @id @default(uuid())
+
+  name String
+
+  groupId String
+
+  group CattleGroup @relation(fields: [groupId], references: [id])
+
+  notes String?
+
+  components FeedRatioComponent[]
+
+  schedules ScheduledFeedRatio[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model FeedRatioComponent {
+  id String @id @default(uuid())
+
+  feedRatioId String
+
+  feedRatio FeedRatio @relation(fields: [feedRatioId], references: [id], onDelete: Cascade)
+
+  inventoryId String
+
+  inventory Inventory @relation(fields: [inventoryId], references: [id])
+
+  quantity Float
+
+  unit String
+
+  createdAt DateTime @default(now())
+}
+
+model ScheduledFeedRatio {
+  id String @id @default(uuid())
+
+  feedRatioId String
+
+  feedRatio FeedRatio @relation(fields: [feedRatioId], references: [id], onDelete: Cascade)
+
+  scheduledTime String
+
+  monday Boolean @default(true)
+
+  tuesday Boolean @default(true)
+
+  wednesday Boolean @default(true)
+
+  thursday Boolean @default(true)
+
+  friday Boolean @default(true)
+
+  saturday Boolean @default(true)
+
+  sunday Boolean @default(true)
+
+  active Boolean @default(true)
+
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id String @id @default(uuid())
+
+  type TransactionType
+
+  category String
+
+  amount Float
+
+  transactionDate DateTime
+
+  paymentMethod PaymentMethod
+
+  vendorId String?
+
+  vendor Vendor? @relation(fields: [vendorId], references: [id])
+
+  cattleId String?
+
+  cattle Cattle? @relation(fields: [cattleId], references: [id])
+
+  referenceNumber String?
+
+  description String?
+
+  createdBy String?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model Document {
+  id String @id @default(uuid())
+
+  fileName String
+
+  originalName String
+
+  mimeType String
+
+  extension String
+
+  size Int
+
+  path String
+
+  documentType DocumentType
+
+  entityType String
+
+  entityId String
+
+  uploadedBy String?
+
+  description String?
+
+  createdAt DateTime @default(now())
+}
+
+model AuditTrail {
+  id String @id @default(uuid())
+
+  userId String?
+
+  user User? @relation(fields: [userId], references: [id])
+
+  entity String
+
+  entityId String?
+
+  action AuditAction
+
+  oldValues String?
+
+  newValues String?
+
+  ipAddress String?
+
+  description String?
+
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id String @id @default(uuid())
+
+  title String
+
+  message String
+
+  type NotificationType @default(Info)
+
+  status NotificationStatus @default(Unread)
+
+  entityType String?
+
+  entityId String?
+
+  userId String?
+
+  user User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  readAt DateTime?
 }

@@ -11,7 +11,21 @@ import {
 import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
+import { UseGuards } from '@nestjs/common';
 
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+
+import { Roles } from '../auth/decorators/roles.decorator';
+
+import { UserRole } from '@prisma/client';
+
+import { ApiBearerAuth } from '@nestjs/swagger';
+@ApiBearerAuth()
+
+@UseGuards(JwtAuthGuard, RolesGuard)
+
+@Roles(UserRole.Admin, UserRole.Manager)
 @Controller('inventory')
 export class InventoryController {
 

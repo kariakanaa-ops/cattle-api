@@ -11,7 +11,25 @@ import {
 import { VendorService } from './vendor.service';
 import { CreateVendorDto } from './dto/create-vendor.dto';
 import { UpdateVendorDto } from './dto/update-vendor.dto';
+import { UseGuards } from '@nestjs/common';
 
+import { ApiBearerAuth } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+
+import { RolesGuard } from '../auth/guards/roles.guard';
+
+import { Roles } from '../auth/decorators/roles.decorator';
+
+import { UserRole } from '@prisma/client';
+
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(
+    UserRole.Admin,
+    UserRole.Accountant,
+    UserRole.Manager,
+)
 @Controller('vendors')
 export class VendorController {
   constructor(private readonly vendorService: VendorService) {}

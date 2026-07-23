@@ -11,7 +11,25 @@ import {
 import { MilkProductionService } from './milk-production.service';
 import { CreateMilkProductionDto } from './dto/create-milk-production.dto';
 import { UpdateMilkProductionDto } from './dto/update-milk-production.dto';
+import { UseGuards } from '@nestjs/common';
 
+import { ApiBearerAuth } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+
+import { RolesGuard } from '../auth/guards/roles.guard';
+
+import { Roles } from '../auth/decorators/roles.decorator';
+
+import { UserRole } from '@prisma/client';
+
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(
+    UserRole.Admin,
+    UserRole.Manager,
+    UserRole.FarmWorker,
+)
 @Controller('milk-production')
 export class MilkProductionController {
 
