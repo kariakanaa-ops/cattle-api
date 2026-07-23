@@ -6,6 +6,7 @@ datasource db {
   provider = "sqlite"
   url      = "file:./dev.db"
 }
+
 enum Breed {
   Holstein
   Jersey
@@ -73,6 +74,7 @@ enum PregnancyStatus {
   Failed
   Calved
 }
+
 enum MilkingSession {
   Morning
   Afternoon
@@ -84,6 +86,7 @@ enum MilkQualityGrade {
   B
   C
 }
+
 enum FeedType {
   Hay
   Silage
@@ -101,270 +104,304 @@ enum StockTransactionType {
   Transfer
   Loss
 }
+
+enum VendorCategory {
+  Feed
+  Medicine
+  Equipment
+  Services
+  General
+}
+
+enum PaymentTerms {
+  Cash
+  Net7
+  Net14
+  Net30
+  Net60
+}
+
+enum InventoryCategory {
+  Feed
+  Medicine
+  Equipment
+  Supplies
+}
+enum StockAdjustmentType {
+  Purchase
+  Consumption
+  Waste
+  Transfer
+  Adjustment
+}
 model Cattle {
-  id                 String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  tagNumber          String   @unique
-  name               String
+  tagNumber String @unique
+  name      String
 
-  breed              Breed
+  breed Breed
 
-  dateOfBirth        DateTime
+  dateOfBirth DateTime
 
-  gender             Gender @default(Female)
+  gender Gender @default(Female)
 
-  status             CattleStatus @default(Active)
+  status CattleStatus @default(Active)
 
-  stage              GrowthStage
+  stage GrowthStage
 
-  lactationNumber    Int      @default(0)
+  lactationNumber Int @default(0)
 
-  weightKg           Float?
+  weightKg Float?
 
-  acquisitionDate    DateTime?
+  acquisitionDate DateTime?
 
-  acquisitionType    AcquisitionType @default(Born_on_Farm)
+  acquisitionType AcquisitionType @default(Born_on_Farm)
 
-  groupId            String?
+  groupId String?
 
   group CattleGroup? @relation(fields: [groupId], references: [id])
 
-  photo              String?
+  photo String?
 
-  notes              String?
+  notes String?
 
-  active             Boolean  @default(true)
+  active Boolean @default(true)
 
-  healthRecords      HealthRecord[]
+  healthRecords HealthRecord[]
 
   breedingRecords BreedingRecord[]
 
   milkProductions MilkProduction[]
 
-  feedConsumptions FeedConsumption[]
+  createdAt DateTime @default(now())
 
-  createdAt          DateTime @default(now())
-
-  updatedAt          DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 }
+
 model CattleGroup {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   description String?
   color       String?
-  active      Boolean  @default(true)
+  active      Boolean @default(true)
 
-  cattle      Cattle[]
+  cattle Cattle[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  consumptions ConsumptionRecord[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
 model HealthRecord {
+  id String @id @default(uuid())
 
-  id              String @id @default(uuid())
+  cattleId String
 
-  cattleId        String
+  cattle Cattle @relation(fields: [cattleId], references: [id])
 
-  cattle          Cattle @relation(fields:[cattleId],references:[id])
+  type HealthRecordType
 
-  type            HealthRecordType
+  status HealthStatus @default(Healthy)
 
-  status          HealthStatus @default(Healthy)
+  diagnosis String?
 
-  diagnosis       String?
+  treatment String?
 
-  treatment       String?
+  medicine String?
 
-  medicine        String?
+  dosage String?
 
-  dosage          String?
+  veterinarian String?
 
-  veterinarian    String?
+  cost Float?
 
-  cost            Float?
+  visitDate DateTime
 
-  visitDate       DateTime
+  nextVisit DateTime?
 
-  nextVisit       DateTime?
+  notes String?
 
-  notes           String?
+  createdAt DateTime @default(now())
 
-  createdAt       DateTime @default(now())
-
-  updatedAt       DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 }
-model User {
-  id           String   @id @default(uuid())
-  firstName    String
-  lastName     String
-  email        String   @unique
-  password     String
 
-  role         String   @default("ADMIN")
-  active       Boolean  @default(true)
+model User {
+  id        String @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String @unique
+  password  String
+
+  role   String  @default("ADMIN")
+  active Boolean @default(true)
 
   refreshToken String?
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
 model BreedingRecord {
+  id String @id @default(uuid())
 
-  id                 String @id @default(uuid())
+  cattleId String
 
-  cattleId           String
+  cattle Cattle @relation(fields: [cattleId], references: [id])
 
-  cattle             Cattle @relation(fields:[cattleId],references:[id])
+  breedingDate DateTime
 
-  breedingDate       DateTime
+  method BreedingMethod
 
-  method             BreedingMethod
+  bullName String?
 
-  bullName           String?
+  semenBatch String?
 
-  semenBatch         String?
+  technician String?
 
-  technician         String?
+  expectedCalving DateTime?
 
-  expectedCalving    DateTime?
+  actualCalving DateTime?
 
-  actualCalving      DateTime?
+  pregnancyStatus PregnancyStatus @default(Open)
 
-  pregnancyStatus    PregnancyStatus @default(Open)
+  calfTag String?
 
-  calfTag            String?
+  calfGender Gender?
 
-  calfGender         Gender?
+  notes String?
 
-  notes              String?
+  createdAt DateTime @default(now())
 
-  createdAt          DateTime @default(now())
-
-  updatedAt          DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 }
+
 model MilkProduction {
+  id String @id @default(uuid())
 
-  id                  String @id @default(uuid())
+  cattleId String
 
-  cattleId            String
+  cattle Cattle @relation(fields: [cattleId], references: [id])
 
-  cattle              Cattle @relation(fields: [cattleId], references: [id])
+  date DateTime
 
-  date                DateTime
+  session MilkingSession
 
-  session             MilkingSession
+  quantityLiters Float
 
-  quantityLiters      Float
+  milkUsedByCalves Float? @default(0)
 
-  milkUsedByCalves    Float? @default(0)
+  fatPercentage Float?
 
-  fatPercentage       Float?
+  proteinPercentage Float?
 
-  proteinPercentage   Float?
+  somaticCellCount Int?
 
-  somaticCellCount    Int?
+  qualityGrade MilkQualityGrade @default(A)
 
-  qualityGrade        MilkQualityGrade @default(A)
+  notes String?
 
-  notes               String?
+  createdAt DateTime @default(now())
 
-  createdAt           DateTime @default(now())
-
-  updatedAt           DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 }
-model FeedCategory {
 
-  id          String   @id @default(uuid())
+model Inventory {
+  id String @id @default(uuid())
 
-  name        String   @unique
+  itemName String
 
-  description String?
+  category InventoryCategory
 
-  createdAt   DateTime @default(now())
+  quantity Float
 
-  updatedAt   DateTime @updatedAt
+  unit String
 
-  feeds       FeedInventory[]
+  reorderLevel Float
+
+  unitCost Float
+
+  vendorId String?
+
+  vendor Vendor? @relation(fields: [vendorId], references: [id])
+
+  lastRestocked DateTime?
+
+  adjustments StockAdjustment[]
+
+  consumptions ConsumptionRecord[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
 }
-model FeedInventory {
 
-  id                  String @id @default(uuid())
+model Vendor {
+  id String @id @default(uuid())
 
-  categoryId          String
+  name String
 
-  category            FeedCategory @relation(fields:[categoryId], references:[id])
+  contactPerson String?
 
-  name                String
+  email String?
 
-  type                FeedType
+  phone String?
 
-  quantity            Float
+  category VendorCategory
 
-  unit                String
+  paymentTerms PaymentTerms
 
-  minimumStock        Float
+  address String?
 
-  unitCost            Float?
+  notes String?
 
-  supplier            String?
+  inventory Inventory[]
 
-  batchNumber         String?
+  createdAt DateTime @default(now())
 
-  manufactureDate     DateTime?
-
-  expiryDate          DateTime?
-
-  storageLocation     String?
-
-  notes               String?
-
-  createdAt           DateTime @default(now())
-
-  updatedAt           DateTime @updatedAt
-
-  stockTransactions   FeedStockTransaction[]
-
-  consumptions        FeedConsumption[]
+  updatedAt DateTime @updatedAt
 }
-model FeedStockTransaction {
+model StockAdjustment {
 
-  id               String @id @default(uuid())
+  id              String @id @default(uuid())
 
-  feedId           String
+  inventoryId     String
 
-  feed             FeedInventory @relation(fields:[feedId], references:[id])
+  inventory        Inventory @relation(fields: [inventoryId], references: [id])
 
-  transactionType  StockTransactionType
+  adjustmentType  StockAdjustmentType
 
-  quantity         Float
+  quantity        Float
 
-  transactionDate  DateTime
+  adjustmentDate  DateTime
 
-  reference        String?
+  reason          String?
 
-  remarks          String?
+  referenceNumber String?
 
-  createdAt        DateTime @default(now())
+  createdBy       String?
+
+  createdAt       DateTime @default(now())
 }
-model FeedConsumption {
+model ConsumptionRecord {
 
-  id               String @id @default(uuid())
+  id              String   @id @default(uuid())
 
-  cattleId         String
+  inventoryId     String
+  inventory       Inventory @relation(fields: [inventoryId], references: [id])
 
-  cattle           Cattle @relation(fields:[cattleId], references:[id])
+  groupId         String
+  group           CattleGroup @relation(fields: [groupId], references: [id])
 
-  feedId           String
+  quantity        Float
 
-  feed             FeedInventory @relation(fields:[feedId], references:[id])
+  feedingDate     DateTime
 
-  feedingDate      DateTime
+  notes           String?
 
-  quantity         Float
+  recordedBy      String?
 
-  session          MilkingSession
-
-  remarks          String?
-
-  createdAt        DateTime @default(now())
+  createdAt       DateTime @default(now())
 }
