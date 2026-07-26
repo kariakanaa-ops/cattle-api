@@ -10,45 +10,44 @@ import {
 
 import { ApiTags } from '@nestjs/swagger';
 
-import { NotificationService } from './notification.service';
+import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 
 @ApiTags('Notifications')
 @Controller('notifications')
-export class NotificationController {
-
+export class NotificationsController {
   constructor(
-    private readonly notificationService: NotificationService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   @Post()
   create(
     @Body() dto: CreateNotificationDto,
   ) {
-    return this.notificationService.create(dto);
+    return this.notificationsService.create(dto);
   }
 
   @Get()
   findAll() {
-    return this.notificationService.findAll();
+    return this.notificationsService.findAll();
   }
 
   @Get('unread')
   unread() {
-    return this.notificationService.unread();
+    return this.notificationsService.unread();
   }
 
   @Patch(':id/read')
-  markRead(
+  markAsRead(
     @Param('id') id: string,
   ) {
-    return this.notificationService.markAsRead(id);
+    return this.notificationsService.markAsRead(id);
   }
 
   @Delete(':id')
   remove(
     @Param('id') id: string,
   ) {
-    return this.notificationService.remove(id);
+    return this.notificationsService.remove(id);
   }
 }

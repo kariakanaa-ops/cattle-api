@@ -186,6 +186,70 @@ enum NotificationStatus {
   Read
 }
 
+enum TaskStatus {
+  Pending
+  InProgress
+  Completed
+  Cancelled
+  Overdue
+}
+
+enum TaskPriority {
+  Low
+  Medium
+  High
+  Critical
+}
+
+enum TaskCategory {
+  Feeding
+  Health
+  Breeding
+  Milking
+  Inventory
+  Maintenance
+  Veterinary
+  Cleaning
+  General
+}
+
+model Task {
+
+  id String @id @default(uuid())
+
+  title String
+
+  description String?
+
+  category TaskCategory
+
+  priority TaskPriority @default(Medium)
+
+  status TaskStatus @default(Pending)
+
+  dueDate DateTime
+
+  completedAt DateTime?
+
+  assignedTo String?
+
+  createdBy String?
+
+  cattleId String?
+
+  cattle Cattle? @relation(fields: [cattleId], references: [id])
+
+  groupId String?
+
+  group CattleGroup? @relation(fields: [groupId], references: [id])
+
+  notes String?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
 model Cattle {
   id String @id @default(uuid())
 
@@ -228,6 +292,8 @@ model Cattle {
 
   transactions Transaction[]
 
+  tasks Task[]
+
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
@@ -245,6 +311,8 @@ model CattleGroup {
   consumptions ConsumptionRecord[]
 
   feedRatios FeedRatio[]
+
+  tasks Task[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
