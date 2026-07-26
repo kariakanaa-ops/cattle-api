@@ -25,6 +25,9 @@ import { AuditModule } from './audit/audit.module';
 import { NotificationModule } from './notifications/notifications.module';
 import { TaskModule } from './task/task.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ExportModule } from './export/export.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { AlertsModule } from './alerts/alerts.module';
 @Module({
   imports: [
     PrismaModule,
@@ -49,6 +52,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     NotificationModule,
     TaskModule,
     ScheduleModule.forRoot(),
+    ExportModule,
+    AnalyticsModule,
+    AlertsModule,
   ],
   controllers: [
     AppController,
